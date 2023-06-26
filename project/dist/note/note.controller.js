@@ -16,38 +16,29 @@ exports.NoteController = void 0;
 const common_1 = require("@nestjs/common");
 const create_note_dto_1 = require("./note.dto/create-note.dto");
 const update_note_dto_1 = require("./note.dto/update-note.dto");
+const note_service_1 = require("./note.service");
 let NoteController = class NoteController {
-    constructor() {
-        this.notes = [
-            {
-                id: 1,
-                text: 'rest',
-                username: 'user1'
-            },
-            { id: 2, text: 'rest', username: 'user1' },
-            { id: 3, text: 'rest', username: 'user2' }
-        ];
+    constructor(noteService) {
+        this.noteService = noteService;
     }
     async getAll() {
-        return this.notes;
+        return this.noteService.getAll();
     }
     async getId(id) {
         console.log(id);
-        return this.notes.find(n => n.id === Number(id));
+        return this.noteService.getId(id);
     }
     async create(dto) {
         console.log(dto);
-        return [...this.notes, dto];
+        return this.noteService.create(dto);
     }
     async update(id, dto) {
         console.log(id, dto);
-        const note = await this.notes.find(n => n.id === Number(id));
-        note.text = dto.text;
-        return this.notes;
+        return this.noteService.update(id, dto);
     }
     async delete(id) {
         console.log(id);
-        return this.notes.filter(n => n.id !== Number(id));
+        return this.noteService.delete(id);
     }
 };
 __decorate([
@@ -87,7 +78,7 @@ __decorate([
 ], NoteController.prototype, "delete", null);
 NoteController = __decorate([
     (0, common_1.Controller)('note'),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [note_service_1.NoteService])
 ], NoteController);
 exports.NoteController = NoteController;
 //# sourceMappingURL=note.controller.js.map
