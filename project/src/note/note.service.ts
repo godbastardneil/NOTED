@@ -1,44 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './note.dto/create-note.dto';
 import { UpdateNoteDto } from './note.dto/update-note.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { NoteEntity } from './note.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class NoteService {
-    notes:any[]
-    constructor() {
-        this.notes = [
-            {
-                id: 1,
-                text: 'rest',
-                username: 'user1'
-            },
-            { id: 2, text: 'rest', username: 'user1' },
-            { id: 3, text: 'rest', username: 'user2' }
-        ]
-    }
+    constructor(@InjectRepository(NoteEntity) private readonly noteRepo: Repository<NoteEntity>){}
 
-    async getAll():Promise<any[]> {
-        return this.notes;
+    async getAll():Promise<NoteEntity[]> {
+        return await this.noteRepo.find();
     }
-    async getId(id:string):Promise<any> {
+    async getById(id:string):Promise<NoteEntity> {
         console.log(id);
-        return this.notes.find(n => n.id === Number(id));
+        return await this.noteRepo.findOneBy({id:Number(id)});
     }
 
-    async create(dto: CreateNoteDto):Promise<any[]> {
+    async insert(dto: CreateNoteDto) {
         console.log(dto);
-        return [... this.notes, dto];
+        await this.noteRepo.insert({text: dto.text, username: dto.username});
     }
 
     async update(id:string, dto: UpdateNoteDto) {
         console.log(id, dto);
-        const note = await this.notes.find(n => n.id === Number(id));
-        note.text = dto.text;
-        return this.notes;
+        await this.noteRepo.update(Number(id), {text: dto.text, username: dto.username});
     }
 
     async delete(id:string) {
         console.log(id);
-        return this.notes.filter(n => n.id !== Number(id))
+        await this.noteRepo.delete(id);
     }
 }
