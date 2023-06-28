@@ -3,14 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { join } from 'path';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 import { NoteModule } from './note/note.module';
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
   // froRootAsync for env
   imports: [NoteModule,
             TypeOrmModule.forRoot({
