@@ -5,10 +5,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserEntity) private userRepo: Repository<UserEntity>) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepo: Repository<UserEntity>,
+
+    private readonly jwtService: JwtService
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const check = await this.userRepo.findOneBy({email: createUserDto.email});
@@ -18,24 +24,17 @@ export class UserService {
       email: createUserDto.email,
       name: createUserDto.name,
       password: await argon2.hash(createUserDto.password)
-    })
-
-    return user;
+    });
+    
+    return {
+      id: user.id,
+      email: user.email,
+      token: this.jwtService.sign({id: user.id, email: user.email})
+    };
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findOne(email: string): Promise<UserEntity>
+  {
+    return await this.userRepo.findOneBy({email: email});
   }
 }
