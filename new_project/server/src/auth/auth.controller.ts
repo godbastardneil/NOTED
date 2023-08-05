@@ -18,8 +18,5 @@ export class AuthController {
   @Get('profile')
   // validate from LocalStrategy
   @UseGuards(JwtAuthGuard) 
-  async getProfile(@Request() req)
-  {
-    return (req.user);
-  }
+  async getProfile(@Request() req) { return (req.user); }
 }

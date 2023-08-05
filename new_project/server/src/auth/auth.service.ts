@@ -4,6 +4,7 @@ import { UserService } from 'src/user/user.service';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/types/types';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService
@@ -13,7 +14,7 @@ export class AuthService
     private jwtService: JwtService
   ) {}
 
-  async validateUser(email: string, pass: string)
+  async validateUser(email: string, pass: string): Promise<UserEntity>
   {
     const user = await this.userService.findOne(email);
     const passwordIsMatch = await argon2.verify(user.password, pass);
